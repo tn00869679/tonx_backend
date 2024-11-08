@@ -1,0 +1,152 @@
+openapi: 3.0.3
+
+info:
+    title: 測試用 api 檔案
+    version: 0.0.1
+
+servers:
+    - url: http://localhost:8888
+
+tags:
+    - name: flight
+      description: 航班
+
+paths:
+    /flight/list:
+        get:
+            tags:
+                - flight
+            summary: 航班查詢
+            description: 用起點、終點、日期來查詢航班狀態
+            parameters:
+              - name: departureAirport
+                in: query
+                required: true
+                schema:
+                  type: string
+                  default: "台北桃園國際機場 (TPE)"
+              - name: arrivalAirport
+                in: query
+                required: true
+                schema:
+                  type: string
+                  default: "東京羽田機場 (HND)"
+              - name: departureTime
+                in: query
+                required: true
+                schema:
+                  type: string
+                  format: date-time
+                  default: "2024-11-01T00:00:00Z"
+              - name: page
+                in: query
+                required: true
+                schema:
+                  type: integer
+                  default: 1
+              - name: perPage
+                in: query
+                required: true
+                schema:
+                  type: integer
+                  default: 5
+            responses:
+              '200':
+                description: 航班清單
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        code:
+                          type: integer
+                        data:
+                          type: object
+                          properties:
+                            FlightInfo:
+                              $ref: '#/components/schemas/FlightInfo'
+                        message:
+                          type: string
+                        status:
+                          type: string
+                      required:
+                        - code
+                        - data
+                        - message
+                        - status
+    
+    /flight/bookTicket:
+        patch:
+            tags:
+                - flight
+            summary: 訂機票
+            description: 用日期、航班來訂票
+            requestBody:
+              required: true
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      departureTime:
+                        type: string
+                        format: date-time
+                        default: "2024-11-01T00:00:00Z"
+                      flight:
+                        type: string
+                        default: "航班 A123"
+            responses:
+              '200':
+                description: 成功預訂
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        code:
+                          type: integer
+                        data:
+                          type: string
+                        message:
+                          type: string
+                        status:
+                          type: string
+                      required:
+                        - code
+                        - data
+                        - message
+                        - status
+
+components:
+  schemas:
+    FlightInfo:
+      type: object
+      properties:
+        ID:
+          type: integer
+        DepartureAirport:
+          type: string
+        DepartureTime:
+          type: string
+          format: date-time
+        ArrivalAirport:
+          type: string
+        ArrivalTime:
+          type: string
+          format: date-time
+        Flight:
+          type: string
+        Price:
+          type: integer
+        AvailableSeats:
+          type: integer
+        Overbooking:
+          type: integer
+        Status:
+          type: boolean
+        CreatedAt:
+          type: string
+          format: date-time
+        UpdatedAt:
+          type: string
+          format: date-time

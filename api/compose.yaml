@@ -1,0 +1,18 @@
+services:
+    editor:
+        image: "swaggerapi/swagger-editor"
+        ports:
+            - "3309:8080"
+        volumes:
+            - ./:/api
+        environment:
+            SWAGGER_FILE: /api/openapi.yaml
+
+    ui:
+        image: "swaggerapi/swagger-ui"
+        ports:
+            - "3310:8080"
+        volumes:
+            - ./:/api
+        environment:
+            SWAGGER_JSON: /api/openapi.yaml
