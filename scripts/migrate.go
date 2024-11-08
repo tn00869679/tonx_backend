@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	_ "tonx_backend/init"
 	"tonx_backend/internal/database"
 	"tonx_backend/internal/database/models"
 	"tonx_backend/internal/structure"

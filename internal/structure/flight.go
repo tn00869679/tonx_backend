@@ -9,9 +9,10 @@ type Flight struct {
 	ArrivalAirport   string
 	ArrivalTime      time.Time
 	Flight           string
-	Price            uint32
-	AvailableSeats   uint16
-	Status           int8
+	Price            int32
+	AvailableSeats   int
+	Overbooking      int
+	Status           bool
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }
