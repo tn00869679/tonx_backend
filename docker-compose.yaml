@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: postgres16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tonx_test_datas
+    networks:
+      tonx_network:
+        ipv4_address: 172.20.0.6
+
+  tonx_backend:
+    image: tonx_backend
+    container_name: tonx_backend
+    ports:
+      - "8888:8888"
+    environment:
+      - ENV=development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=postgres
+      - DB_NAME=tonx_test_datas
+    networks:
+      tonx_network:
+        ipv4_address: 172.20.0.2
+    depends_on:
+      - db
+    command: sh -c "sleep 5 && /app/tonx_backend --migrate=true"
+
+  tonx_frontend:
+    image: tonx_frontend
+    container_name: tonx_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_SERVER=http://localhost:8888
+    networks:
+      tonx_network:
+        ipv4_address: 172.20.0.3
+    depends_on:
+      - db
+      - tonx_backend
+
+  swagger_editor:
+      image: "swaggerapi/swagger-editor"
+      platform: linux/amd64
+      ports:
+          - "3309:8080"
+      volumes:
+          - ./api:/api
+      environment:
+          SWAGGER_FILE: /api/openapi.yaml
+      networks:
+        tonx_network:
+          ipv4_address: 172.20.0.4
+
+  swagger_ui:
+      image: "swaggerapi/swagger-ui"
+      platform: linux/amd64
+      ports:
+          - "3310:8080"
+      volumes:
+          - ./api:/api
+      environment:
+          SWAGGER_JSON: /api/openapi.yaml
+      networks:
+        tonx_network:
+          ipv4_address: 172.20.0.5
+
+networks:
+  tonx_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
