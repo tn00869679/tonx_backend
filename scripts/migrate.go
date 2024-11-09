@@ -1,4 +1,4 @@
-package main
+package scripts
 
 import (
 	"encoding/json"
@@ -11,17 +11,19 @@ import (
 	"tonx_backend/internal/structure"
 )
 
-func main() {
-	migrate()
-}
-
-func migrate() {
+func Migrate() {
 	db := database.Connect()
 	db.AutoMigrate(&models.Flight{})
 
 	datas := getTestDatas()
 	batchSize := 1000
 	db.CreateInBatches(datas, batchSize)
+
+	postgres, err := db.DB()
+	if err != nil {
+		log.Fatalln("Failed to get postgres from gorm DB :", err)
+	}
+	postgres.Close()
 }
 
 func getTestDatas() *[]structure.Flight {
