@@ -1,17 +1,27 @@
 # tonx_backend
 
-## Go 版本
+## Quick Start
 
-* go 1.22.6
+Clone from this repo, then run the command: 
 
-## 安裝套件
-
-```
-go mod download
+```bash
+docker build -t tonx_backend .
 ```
 
-## 啟動專案
+**Make sure you already build up:**
+* [tonx_frontend docker image](https://github.com/tn00869679/tonx_frontend)
+* tonx_backend docker image (this repo)
 
+```bash
+docker-compose up -d
 ```
-go run main.go
+
+View frontend at 
+```txt
+http://localhost:5173/
+```
+
+View API docs (Swagger) at
+```txt
+http://localhost:3310/
 ```
