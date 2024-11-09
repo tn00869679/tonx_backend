@@ -11,18 +11,27 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (s *Service) getFlightList(c *gin.Context, flights *[]models.Flight, req *request.FlightList) bool {
+func (s *Service) getFlightList(c *gin.Context, flights *[]models.Flight, count *int64, req *request.FlightList) bool {
 	offset := (req.Page - 1) * req.PerPage
-	if result := s.pdb.Where("departure_airport = ?", req.DepartureAirport).
+	query := s.pdb.Model(&models.Flight{}).
+		Where("departure_airport = ?", req.DepartureAirport).
 		Where("arrival_airport = ?", req.ArrivalAirport).
 		Where("departure_time >= ?", req.DepartureTime).
-		Order("id ASC").
-		Offset(offset).
-		Limit(req.PerPage).
-		Find(flights); result.Error != nil {
+		Where("status", true)
+
+	if err := query.Count(count).Error; err != nil {
 		response.ServerError(c)
 		return false
 	}
+
+	if err := query.Order("id ASC").
+		Offset(offset).
+		Limit(req.PerPage).
+		Find(flights).Error; err != nil {
+		response.ServerError(c)
+		return false
+	}
+
 	return true
 }
 

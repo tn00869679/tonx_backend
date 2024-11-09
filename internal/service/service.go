@@ -32,11 +32,17 @@ func (s *Service) FlightList(c *gin.Context) {
 	}
 
 	var flights []models.Flight
-	if !s.getFlightList(c, &flights, &req) {
+	var count int64
+	if !s.getFlightList(c, &flights, &count, &req) {
 		return
 	}
 
-	response.OK(c, &flights, "")
+	data := map[string]interface{}{
+		"count":   &count,
+		"flights": &flights,
+	}
+
+	response.OK(c, data, "")
 }
 
 func (s *Service) BookTicket(c *gin.Context) {
